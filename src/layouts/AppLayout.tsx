@@ -1,4 +1,5 @@
 import { Link, Outlet } from 'react-router-dom';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import '@/styles/base.css';
 
 export const AppLayout = () => (
@@ -10,6 +11,7 @@ export const AppLayout = () => (
         </Link>
       </div>
     </header>
+    <Breadcrumbs />
     <main>
       <div className="layout">
         <Outlet />
