@@ -1,24 +1,24 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { fetchGroups, getCartInfo, addGroupToDraft } from '@/api/cavi';
 import { ensureAuth } from '@/api/auth';
 import type { CaviGroup } from '@/types/cavi';
 import { groupsMock, calculationMock } from '@/mocks/groups';
 import { GroupsList } from '@/components/GroupsList';
 import { CalculationLink } from '@/components/CalculationLink';
+import {
+  useFilters,
+  setTitleAction,
+  setAgeGroupAction,
+  setDiseaseTypeAction,
+} from '@/store';
 import '@/styles/filters.css';
 
-interface Filters {
-  title: string;
-  ageGroup: string;
-  diseaseType: string;
-}
-
 export const GroupsPage = () => {
-  const [filters, setFilters] = useState<Filters>({
-    title: '',
-    ageGroup: '',
-    diseaseType: '',
-  });
+  // Получаем фильтры из Redux store
+  const filters = useFilters();
+  const dispatch = useDispatch();
+
   const [groups, setGroups] = useState<CaviGroup[]>([]);
   const [loading, setLoading] = useState(false);
   const [cartItems, setCartItems] = useState(0);
@@ -26,14 +26,17 @@ export const GroupsPage = () => {
   const [addingId, setAddingId] = useState<number | null>(null);
 
   // Фильтрация mock-данных при отсутствии бекенда
-  const filterMockGroups = useCallback((f: Filters) => {
-    return groupsMock.filter((group) => {
-      const matchTitle = !f.title || group.name.toLowerCase().includes(f.title.toLowerCase());
-      const matchAge = !f.ageGroup || group.ageGroup === f.ageGroup;
-      const matchDisease = !f.diseaseType || group.diseaseType === f.diseaseType;
-      return matchTitle && matchAge && matchDisease;
-    });
-  }, []);
+  const filterMockGroups = useCallback(
+    (f: typeof filters) => {
+      return groupsMock.filter((group) => {
+        const matchTitle = !f.title || group.name.toLowerCase().includes(f.title.toLowerCase());
+        const matchAge = !f.ageGroup || group.ageGroup === f.ageGroup;
+        const matchDisease = !f.diseaseType || group.diseaseType === f.diseaseType;
+        return matchTitle && matchAge && matchDisease;
+      });
+    },
+    [],
+  );
 
   const loadCartInfo = useCallback(async () => {
     try {
@@ -48,7 +51,7 @@ export const GroupsPage = () => {
   }, []);
 
   const loadGroups = useCallback(
-    async (f: Filters) => {
+    async (f: typeof filters) => {
       setLoading(true);
       try {
         const response = await fetchGroups({
@@ -72,10 +75,6 @@ export const GroupsPage = () => {
     loadCartInfo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const handleFilterChange = (newFilters: Filters) => {
-    setFilters(newFilters);
-  };
 
   const handleSearch = (event: React.FormEvent) => {
     event.preventDefault();
@@ -108,13 +107,13 @@ export const GroupsPage = () => {
             className="search-input"
             placeholder="Поиск по наименованию"
             value={filters.title}
-            onChange={(e) => handleFilterChange({ ...filters, title: e.target.value })}
+            onChange={(e) => dispatch(setTitleAction(e.target.value))}
           />
           <div className="filters-row">
             <select
               className="filter-select"
               value={filters.ageGroup}
-              onChange={(e) => handleFilterChange({ ...filters, ageGroup: e.target.value })}
+              onChange={(e) => dispatch(setAgeGroupAction(e.target.value))}
             >
               <option value="">Все возрасты</option>
               <option value="young">Молодые (до 35 лет)</option>
@@ -124,7 +123,7 @@ export const GroupsPage = () => {
             <select
               className="filter-select"
               value={filters.diseaseType}
-              onChange={(e) => handleFilterChange({ ...filters, diseaseType: e.target.value })}
+              onChange={(e) => dispatch(setDiseaseTypeAction(e.target.value))}
             >
               <option value="">Все типы заболеваний</option>
               <option value="diabetes">Сахарный диабет</option>
