@@ -1,9 +1,9 @@
-import { envConfig } from '@/config/env';
 import { tokenStorage } from './tokenStorage';
 import { refreshAccessToken } from './auth';
 import type { ApiError } from '@/types/cavi';
+import { DEST_API } from '@/config/target_config';
 
-const API_BASE = envConfig.API_BASE_URL.replace(/\/$/, '');
+const API_BASE = DEST_API;
 
 interface FetchOptions extends RequestInit {
   auth?: boolean;
@@ -56,7 +56,15 @@ export const apiFetch = async <T>(path: string, options: FetchOptions = {}): Pro
       headers: finalHeaders,
     });
 
-  let response = await request();
+  let response: Response;
+  try {
+    response = await request();
+  } catch (networkError) {
+    // Сетевая ошибка (бекенд недоступен)
+    const error: ApiError = new Error('Network error: backend unavailable');
+    error.status = 0;
+    throw error;
+  }
 
   if (response.status === 401 && auth) {
     const newToken = await refreshAccessToken();

@@ -1,15 +1,22 @@
 import { envConfig } from '@/config/env';
 import { tokenStorage } from './tokenStorage';
 import type { LoginResponse } from '@/types/cavi';
+import { DEST_API } from '@/config/target_config';
 
-const API_BASE = envConfig.API_BASE_URL.replace(/\/$/, '');
+// Используем DEST_API для Tauri совместимости
+const API_BASE = DEST_API || envConfig.API_BASE_URL.replace(/\/$/, '');
 
 export const login = async (username: string, password: string) => {
-  const response = await fetch(`${API_BASE}/api/users/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password }),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}/api/users/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+  } catch {
+    throw new Error('Сервер недоступен');
+  }
 
   if (!response.ok) {
     throw new Error('Не удалось выполнить вход');
@@ -42,18 +49,23 @@ export const refreshAccessToken = async (): Promise<string | null> => {
     return null;
   }
 
-  const response = await fetch(`${API_BASE}/api/users/refresh`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ refresh_token: refreshToken }),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}/api/users/refresh`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: refreshToken }),
+    });
+  } catch {
+    // Сервер недоступен
+    return null;
+  }
 
   if (!response.ok) {
     tokenStorage.clear();
     return null;
   }
 
-  // Бекенд возвращает LoginResponse с token и refresh_token
   const data: LoginResponse = await response.json();
   tokenStorage.setTokens(data.token, data.refresh_token);
   return data.token;

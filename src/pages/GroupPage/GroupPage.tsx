@@ -11,17 +11,22 @@ export const GroupPage = () => {
   const [group, setGroup] = useState<CaviGroup | null>(null);
 
   useEffect(() => {
+    if (!id) return;
+
+    // Сначала показываем мок
+    const mockGroup = groupsMock.find((item) => item.id === Number(id));
+    if (mockGroup) {
+      setGroup(mockGroup);
+    }
+
+    // Пытаемся загрузить реальные данные
     const loadGroup = async () => {
-      if (!id) return;
       try {
         const response = await fetchGroup(Number(id));
         setGroup(response);
-      } catch (err) {
-        console.error(err);
-        const fallback = groupsMock.find((item) => item.id === Number(id));
-        if (fallback) {
-          setGroup(fallback);
-        }
+      } catch {
+        console.log('Группа недоступна, используем mock');
+        // Мок уже установлен выше
       }
     };
     loadGroup();

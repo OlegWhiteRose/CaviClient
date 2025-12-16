@@ -42,9 +42,10 @@ export const GroupsPage = () => {
       const info = await getCartInfo();
       setCartItems(info.items);
       setCalculationId(info.calculation_id || null);
-      // Сохраняем в Redux для мобильного меню
       dispatch(setCartAction({ items: info.items, calculationId: info.calculation_id || null }));
     } catch {
+      // При ошибке используем моки
+      console.log('Корзина недоступна, используем mock');
       const mockItems = calculationMock.calculationGroups?.length ?? 0;
       const mockId = calculationMock.id;
       setCartItems(mockItems);
@@ -63,8 +64,9 @@ export const GroupsPage = () => {
           disease: f.diseaseType,
         });
         setGroups(response);
-      } catch (err) {
-        console.error('Ошибка загрузки групп, используем mock:', err);
+      } catch {
+        // При любой ошибке (сеть, CORS, бекенд недоступен) используем моки
+        console.log('Бекенд недоступен, используем mock данные');
         setGroups(filterMockGroups(f));
       } finally {
         setLoading(false);
@@ -74,6 +76,15 @@ export const GroupsPage = () => {
   );
 
   useEffect(() => {
+    // Сначала показываем моки, потом пытаемся загрузить с сервера
+    setGroups(filterMockGroups(filters));
+    const mockItems = calculationMock.calculationGroups?.length ?? 0;
+    const mockId = calculationMock.id;
+    setCartItems(mockItems);
+    setCalculationId(mockId);
+    dispatch(setCartAction({ items: mockItems, calculationId: mockId }));
+
+    // Пытаемся загрузить реальные данные
     loadGroups(filters);
     loadCartInfo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
