@@ -105,3 +105,35 @@ input:focus {
     cursor: not-allowed;
     pointer-events: none;
 }
+
+/* Tablet */
+@media (max-width: 1024px) {
+    .request-link {
+        padding: 8px;
+    }
+
+    .request-link-icon {
+        width: 50px;
+        height: 48px;
+    }
+
+    .request-link-number {
+        font-size: 16px;
+    }
+}
+
+/* Mobile - hide cart button, show in burger menu */
+@media (max-width: 768px) {
+    .request-link {
+        display: none;
+    }
+
+    .cards .card {
+        height: auto;
+        min-height: 350px;
+    }
+
+    .cards .card img {
+        height: 160px;
+    }
+}

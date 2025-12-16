@@ -11,6 +11,7 @@ import {
   setTitleAction,
   setAgeGroupAction,
   setDiseaseTypeAction,
+  setCartAction,
 } from '@/store';
 import '@/styles/filters.css';
 
@@ -26,17 +27,14 @@ export const GroupsPage = () => {
   const [addingId, setAddingId] = useState<number | null>(null);
 
   // Фильтрация mock-данных при отсутствии бекенда
-  const filterMockGroups = useCallback(
-    (f: typeof filters) => {
-      return groupsMock.filter((group) => {
-        const matchTitle = !f.title || group.name.toLowerCase().includes(f.title.toLowerCase());
-        const matchAge = !f.ageGroup || group.ageGroup === f.ageGroup;
-        const matchDisease = !f.diseaseType || group.diseaseType === f.diseaseType;
-        return matchTitle && matchAge && matchDisease;
-      });
-    },
-    [],
-  );
+  const filterMockGroups = useCallback((f: typeof filters) => {
+    return groupsMock.filter((group) => {
+      const matchTitle = !f.title || group.name.toLowerCase().includes(f.title.toLowerCase());
+      const matchAge = !f.ageGroup || group.ageGroup === f.ageGroup;
+      const matchDisease = !f.diseaseType || group.diseaseType === f.diseaseType;
+      return matchTitle && matchAge && matchDisease;
+    });
+  }, []);
 
   const loadCartInfo = useCallback(async () => {
     try {
@@ -44,11 +42,16 @@ export const GroupsPage = () => {
       const info = await getCartInfo();
       setCartItems(info.items);
       setCalculationId(info.calculation_id || null);
+      // Сохраняем в Redux для мобильного меню
+      dispatch(setCartAction({ items: info.items, calculationId: info.calculation_id || null }));
     } catch {
-      setCartItems(calculationMock.calculationGroups?.length ?? 0);
-      setCalculationId(calculationMock.id);
+      const mockItems = calculationMock.calculationGroups?.length ?? 0;
+      const mockId = calculationMock.id;
+      setCartItems(mockItems);
+      setCalculationId(mockId);
+      dispatch(setCartAction({ items: mockItems, calculationId: mockId }));
     }
-  }, []);
+  }, [dispatch]);
 
   const loadGroups = useCallback(
     async (f: typeof filters) => {

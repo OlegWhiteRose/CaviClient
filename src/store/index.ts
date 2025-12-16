@@ -12,3 +12,12 @@ export {
   resetFiltersAction,
 } from './slices/filtersSlice';
 export type { FiltersState } from './slices/filtersSlice';
+export {
+  useCartItems,
+  useCalculationId,
+  useCart,
+  setCartItemsAction,
+  setCalculationIdAction,
+  setCartAction,
+} from './slices/cartSlice';
+export type { CartState } from './slices/cartSlice';

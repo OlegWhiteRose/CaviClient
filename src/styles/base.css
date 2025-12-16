@@ -1,3 +1,5 @@
+@import './mobile-menu.css';
+
 html {
     overflow-y: scroll;
 }
@@ -6,7 +8,6 @@ html,
 body {
     margin: 0;
     padding: 0;
-
     height: 100vh;
 }
 
@@ -20,7 +21,9 @@ body {
 
 body,
 button,
-div {
+div,
+select,
+input {
     font-family: 'DMSans', Arial, sans-serif;
 }
 
@@ -72,4 +75,38 @@ header {
 main {
     padding: 20px 0;
     color: #000000;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+    .layout {
+        padding: 0 15px;
+    }
+
+    header {
+        padding: 15px 0;
+    }
+
+    .header-link {
+        font-size: 18px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .layout {
+        padding: 0 12px;
+    }
+
+    header {
+        padding: 12px 0;
+    }
+
+    .header-link {
+        font-size: 16px;
+    }
+
+    main {
+        padding: 15px 0;
+    }
 }
