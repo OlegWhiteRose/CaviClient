@@ -5,11 +5,12 @@ import '@/styles/card.css';
 
 interface GroupCardProps {
   group: CaviGroup;
-  onAdd: (groupId: number) => void;
-  isAdding: boolean;
+  showAddButton?: boolean;
+  onAdd?: (groupId: number) => void;
+  isAdding?: boolean;
 }
 
-export const GroupCard = ({ group, onAdd, isAdding }: GroupCardProps) => (
+export const GroupCard = ({ group, showAddButton = false, onAdd, isAdding }: GroupCardProps) => (
   <div className="card">
     <div className="content">
       <img
@@ -28,13 +29,15 @@ export const GroupCard = ({ group, onAdd, isAdding }: GroupCardProps) => (
       <Link to={`/cavi-group/${group.id}`}>
         <button type="button">Подробнее</button>
       </Link>
-      <button
-        type="button"
-        disabled={group.isSelected || isAdding}
-        onClick={() => onAdd(group.id)}
-      >
-        {group.isSelected ? 'Добавлено' : 'Добавить'}
-      </button>
+      {showAddButton && onAdd && (
+        <button
+          type="button"
+          disabled={group.isSelected || isAdding}
+          onClick={() => onAdd(group.id)}
+        >
+          {group.isSelected ? 'Добавлено' : 'Добавить'}
+        </button>
+      )}
     </div>
   </div>
 );
