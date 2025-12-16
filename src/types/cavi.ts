@@ -7,7 +7,6 @@ export interface CaviGroup {
   imageURL: string;
   ageGroup: string;
   diseaseType?: string | null;
-  basePrice: number;
 }
 
 export interface CartInfo {
@@ -16,11 +15,8 @@ export interface CartInfo {
 }
 
 export interface CaviCalculationGroup {
-  id: number;
-  calculationID: number;
-  groupID: number;
+  groupId: number;
   caviIndex: number;
-  calculatedCAVI?: number;
   group?: CaviGroup;
 }
 
@@ -35,17 +31,15 @@ export interface CaviCalculation {
   diastolicPressure?: number | null;
   pulseWaveVelocity?: number | null;
   creatorLogin: string;
+  groupsCount?: number;
   calculationGroups?: CaviCalculationGroup[];
 }
 
 export interface LoginResponse {
-  message: string;
   token: string;
   refresh_token: string;
-  user: {
-    username: string;
-    is_moderator: boolean;
-  };
+  username: string;
+  is_moderator: boolean;
 }
 
 export interface ApiError extends Error {

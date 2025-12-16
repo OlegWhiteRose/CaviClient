@@ -7,6 +7,7 @@ export interface GroupFilters {
   disease?: string;
 }
 
+// Бекенд возвращает PascalCase
 const transformCaviGroup = (data: any): CaviGroup => ({
   id: data.ID,
   name: data.Name,
@@ -16,7 +17,6 @@ const transformCaviGroup = (data: any): CaviGroup => ({
   imageURL: data.ImageURL,
   ageGroup: data.AgeGroup,
   diseaseType: data.DiseaseType,
-  basePrice: data.BasePrice,
 });
 
 export const fetchGroups = async (filters: GroupFilters = {}) => {
@@ -34,10 +34,9 @@ export const fetchGroups = async (filters: GroupFilters = {}) => {
   return data?.map(transformCaviGroup) || [];
 };
 
-export const fetchGroup = (id: number) => {
-  return apiFetch<any>(`/api/cavi-groups/${id}`, { method: 'GET', auth: false }).then(
-    transformCaviGroup,
-  );
+export const fetchGroup = async (id: number) => {
+  const data = await apiFetch<any>(`/api/cavi-groups/${id}`, { method: 'GET', auth: false });
+  return transformCaviGroup(data);
 };
 
 export const addGroupToDraft = (id: number) => {
@@ -51,11 +50,8 @@ export const getCartInfo = () => {
 };
 
 const transformCalculationGroup = (data: any) => ({
-  id: data.ID,
-  calculationID: data.CalculationID,
-  groupID: data.GroupID,
+  groupId: data.GroupID,
   caviIndex: data.CAVIIndex,
-  calculatedCAVI: data.CalculatedCAVI,
   group: data.Group ? transformCaviGroup(data.Group) : undefined,
 });
 
@@ -70,13 +66,13 @@ const transformCalculation = (data: any): CaviCalculation => ({
   diastolicPressure: data.DiastolicPressure,
   pulseWaveVelocity: data.PulseWaveVelocity,
   creatorLogin: data.CreatorLogin,
+  groupsCount: data.GroupsCount,
   calculationGroups: data.CalculationGroups?.map(transformCalculationGroup) || [],
 });
 
-export const fetchCalculation = (id: number) => {
-  return apiFetch<any>(`/api/cavi-calculations/${id}`, { method: 'GET' }).then(
-    transformCalculation,
-  );
+export const fetchCalculation = async (id: number) => {
+  const data = await apiFetch<any>(`/api/cavi-calculations/${id}`, { method: 'GET' });
+  return transformCalculation(data);
 };
 
 export const removeGroupFromDraft = (groupId: number) => {
@@ -99,5 +95,38 @@ export const deleteCalculation = (id: number) => {
     method: 'DELETE',
     parseJson: false,
   });
+};
+
+export const formDraft = () => {
+  return apiFetch<CaviCalculation>('/api/cavi-calculations/draft/form', {
+    method: 'PUT',
+  }).then(transformCalculation);
+};
+
+export const updateCalculation = (id: number, data: {
+  systolic_pressure?: number;
+  diastolic_pressure?: number;
+  pulse_wave_velocity?: number;
+}) => {
+  return apiFetch(`/api/cavi-calculations/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+    parseJson: false,
+  });
+};
+
+export const fetchCalculations = async (filters?: {
+  status?: string;
+  date_from?: string;
+  date_to?: string;
+}) => {
+  const params = new URLSearchParams();
+  if (filters?.status) params.set('status', filters.status);
+  if (filters?.date_from) params.set('date_from', filters.date_from);
+  if (filters?.date_to) params.set('date_to', filters.date_to);
+
+  const query = params.toString() ? `?${params.toString()}` : '';
+  const data = await apiFetch<any[]>(`/api/cavi-calculations${query}`, { method: 'GET' });
+  return data?.map(transformCalculation) || [];
 };
 

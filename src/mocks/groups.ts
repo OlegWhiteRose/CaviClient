@@ -10,7 +10,6 @@ export const groupsMock: CaviGroup[] = [
     imageURL: '',
     ageGroup: 'young',
     diseaseType: null,
-    basePrice: 15_000,
   },
   {
     id: 2,
@@ -21,7 +20,6 @@ export const groupsMock: CaviGroup[] = [
     imageURL: '',
     ageGroup: 'middle',
     diseaseType: null,
-    basePrice: 18_000,
   },
   {
     id: 3,
@@ -32,7 +30,6 @@ export const groupsMock: CaviGroup[] = [
     imageURL: '',
     ageGroup: 'elderly',
     diseaseType: 'hypertension',
-    basePrice: 25_500,
   },
   {
     id: 4,
@@ -43,7 +40,6 @@ export const groupsMock: CaviGroup[] = [
     imageURL: '',
     ageGroup: 'young',
     diseaseType: 'diabetes',
-    basePrice: 21_300,
   },
 ];
 
@@ -54,16 +50,12 @@ export const calculationMock: CaviCalculation = {
   creatorLogin: 'user1',
   calculationGroups: [
     {
-      id: 1,
-      calculationID: 101,
-      groupID: 2,
+      groupId: 2,
       caviIndex: 0,
       group: groupsMock[1],
     },
     {
-      id: 2,
-      calculationID: 101,
-      groupID: 3,
+      groupId: 3,
       caviIndex: 0,
       group: groupsMock[2],
     },

@@ -5,7 +5,7 @@ import type { LoginResponse } from '@/types/cavi';
 const API_BASE = envConfig.API_BASE_URL.replace(/\/$/, '');
 
 export const login = async (username: string, password: string) => {
-  const response = await fetch(`${API_BASE}/api/auth/login`, {
+  const response = await fetch(`${API_BASE}/api/users/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password }),
@@ -27,7 +27,7 @@ export const logout = async () => {
     : {};
 
   try {
-    await fetch(`${API_BASE}/api/auth/logout`, {
+    await fetch(`${API_BASE}/api/users/logout`, {
       method: 'POST',
       headers,
     });
@@ -42,7 +42,7 @@ export const refreshAccessToken = async (): Promise<string | null> => {
     return null;
   }
 
-  const response = await fetch(`${API_BASE}/api/auth/refresh`, {
+  const response = await fetch(`${API_BASE}/api/users/refresh`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refresh_token: refreshToken }),
@@ -53,9 +53,10 @@ export const refreshAccessToken = async (): Promise<string | null> => {
     return null;
   }
 
-  const data: { access_token: string; refresh_token: string } = await response.json();
-  tokenStorage.setTokens(data.access_token, data.refresh_token);
-  return data.access_token;
+  // Бекенд возвращает LoginResponse с token и refresh_token
+  const data: LoginResponse = await response.json();
+  tokenStorage.setTokens(data.token, data.refresh_token);
+  return data.token;
 };
 
 let authPromise: Promise<LoginResponse> | null = null;
@@ -84,5 +85,37 @@ export const ensureAuth = async () => {
 
   const result = await authPromise;
   return result.token;
+};
+
+export const register = async (username: string, password: string) => {
+  const response = await fetch(`${API_BASE}/api/users/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Не удалось зарегистрироваться');
+  }
+
+  return response.json();
+};
+
+export const getCurrentUser = async () => {
+  const accessToken = tokenStorage.getAccess();
+  if (!accessToken) {
+    throw new Error('Не авторизован');
+  }
+
+  const response = await fetch(`${API_BASE}/api/users/me`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+
+  if (!response.ok) {
+    throw new Error('Не удалось получить данные пользователя');
+  }
+
+  return response.json();
 };
 
