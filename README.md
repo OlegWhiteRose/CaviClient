@@ -1,1 +1,0 @@
-# RIP Frontend (Lab 5)
