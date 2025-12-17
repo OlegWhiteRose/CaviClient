@@ -1,4 +1,5 @@
 import type { CaviGroup } from '@/types/cavi';
+import { getProxiedImageUrl } from '@/utils/imageUrl';
 import defaultImage from '@/assets/images/default.jpg';
 import '@/styles/card.css';
 
@@ -15,7 +16,7 @@ export const GroupDetail = ({ group }: GroupDetailProps) => {
     <div className="card large">
       <div className="content">
         <img
-          src={group.imageURL || defaultImage}
+          src={getProxiedImageUrl(group.imageURL) || defaultImage}
           alt={group.name}
           onError={(event) => {
             (event.target as HTMLImageElement).src = defaultImage;

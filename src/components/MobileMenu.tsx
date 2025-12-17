@@ -42,16 +42,18 @@ export const MobileMenu = ({
           >
             Группы пациентов
           </Link>
-        </nav>
-        {calculationId && cartItems > 0 && (
-          <div className="mobile-cart">
-            <Link to={`/calculations/${calculationId}`} className="mobile-cart-link" onClick={onClose}>
-              <img src={requestIcon} alt="Корзина" className="mobile-cart-icon" />
+          {calculationId && cartItems > 0 && (
+            <Link
+              to={`/calculations/${calculationId}`}
+              className={`mobile-nav-link mobile-nav-cart ${currentPath.includes('/calculations/') ? 'active' : ''}`}
+              onClick={onClose}
+            >
+              <img src={requestIcon} alt="" className="mobile-nav-cart-icon" />
               <span>Корзина</span>
-              <span className="mobile-cart-badge">{cartItems}</span>
+              <span className="mobile-nav-badge">{cartItems}</span>
             </Link>
-          </div>
-        )}
+          )}
+        </nav>
       </div>
     </>
   );

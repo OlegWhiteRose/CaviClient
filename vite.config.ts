@@ -13,7 +13,9 @@ const minioUrl = 'http://localhost:9000';
 const base = process.env.GITHUB_PAGES ? '/rip_frontend/' : '/';
 
 // HTTPS сертификаты (создаются командой: mkcert create-ca && mkcert create-cert)
-const httpsConfig = fs.existsSync('./cert.key') ? {
+// Отключаем HTTPS для Tauri (TAURI_DEV=true) — Tauri использует http://localhost
+const isTauriDev = process.env.TAURI_DEV === 'true';
+const httpsConfig = !isTauriDev && fs.existsSync('./cert.key') ? {
   key: fs.readFileSync(path.resolve(__dirname, 'cert.key')),
   cert: fs.readFileSync(path.resolve(__dirname, 'cert.crt')),
 } : undefined;
@@ -111,6 +113,13 @@ export default defineConfig({
     https: httpsConfig,
     watch: {
       usePolling: true,
+    },
+    // CORS заголовки для доступа с GH Pages на локальный сервер
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Private-Network': 'true',  // Разрешает доступ к локальной сети
     },
     proxy: {
       '/api': {

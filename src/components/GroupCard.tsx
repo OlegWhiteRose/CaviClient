@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import type { CaviGroup } from '@/types/cavi';
+import { getProxiedImageUrl } from '@/utils/imageUrl';
 import defaultImage from '@/assets/images/default.jpg';
 import '@/styles/card.css';
 
@@ -14,7 +15,7 @@ export const GroupCard = ({ group, showAddButton = false, onAdd, isAdding }: Gro
   <div className="card">
     <div className="content">
       <img
-        src={group.imageURL || defaultImage}
+        src={getProxiedImageUrl(group.imageURL) || defaultImage}
         alt={group.name}
         onError={(event) => {
           (event.target as HTMLImageElement).src = defaultImage;

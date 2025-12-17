@@ -6,7 +6,7 @@
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:3000",
-    "beforeDevCommand": "npm run dev",
+    "beforeDevCommand": "TAURI_DEV=true npm run dev",
     "beforeBuildCommand": "npm run build"
   },
   "plugins": {
@@ -29,7 +29,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; img-src 'self' http://*:9000 data: blob:; connect-src 'self' http://*:8080 http://*:9000; script-src 'self'; style-src 'self' 'unsafe-inline';"
+      "csp": "default-src 'self'; img-src 'self' http://localhost:9000 http://*:9000 data: blob:; connect-src 'self' http://localhost:8080 http://localhost:9000 http://*:8080 http://*:9000; script-src 'self'; style-src 'self' 'unsafe-inline';"
     }
   },
   "bundle": {
