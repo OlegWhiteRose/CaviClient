@@ -2,11 +2,9 @@ import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
-
-// IP адрес для локальной сети (измени на свой!)
-const LOCAL_IP = process.env.LOCAL_IP || '192.168.1.72';
-const BACKEND_PORT = 8080;
-const MINIO_PORT = 9000;
+import mkcert from 'vite-plugin-mkcert';
+import fs from 'node:fs';
+import path from 'node:path';
 
 // Для dev режима используем localhost, для Tauri build - IP
 const backendUrl = process.env.VITE_API_BASE_URL || 'http://localhost:8080';
@@ -15,15 +13,22 @@ const minioUrl = 'http://localhost:9000';
 // Для GH Pages используем /rip_frontend/, для Tauri и dev - /
 const base = process.env.GITHUB_PAGES ? '/rip_frontend/' : '/';
 
+// HTTPS сертификаты (создаются командой: mkcert create-ca && mkcert create-cert)
+const httpsConfig = fs.existsSync('./cert.key') ? {
+  key: fs.readFileSync(path.resolve(__dirname, 'cert.key')),
+  cert: fs.readFileSync(path.resolve(__dirname, 'cert.crt')),
+} : undefined;
+
 export default defineConfig({
   base,
   plugins: [
     react(),
+    mkcert(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['fonts/*.ttf', 'vite.svg'],
       devOptions: {
-        enabled: true, // Включить PWA в dev режиме
+        enabled: true,
       },
       manifest: {
         name: 'CAVI Калькулятор',
@@ -103,8 +108,9 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    host: true, // Позволяет доступ по IP (для Tauri и мобильных)
+    host: true,
     strictPort: true,
+    https: httpsConfig,
     watch: {
       usePolling: true,
     },
@@ -118,10 +124,9 @@ export default defineConfig({
         target: minioUrl,
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/img-proxy/, ''),
+        rewrite: (p) => p.replace(/^\/img-proxy/, ''),
       },
     },
   },
-  // Для Tauri: очищаем кэш при сборке
   clearScreen: false,
 });

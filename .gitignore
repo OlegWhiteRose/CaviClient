@@ -35,3 +35,8 @@ Thumbs.db
 
 # Testing
 coverage
+
+# SSL Certificates (mkcert)
+*.key
+ca.crt
+cert.crt
