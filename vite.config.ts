@@ -2,7 +2,6 @@ import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
-import mkcert from 'vite-plugin-mkcert';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -23,7 +22,6 @@ export default defineConfig({
   base,
   plugins: [
     react(),
-    mkcert(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['fonts/*.ttf', 'vite.svg'],
