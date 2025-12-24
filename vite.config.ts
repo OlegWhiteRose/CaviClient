@@ -10,7 +10,7 @@ const backendUrl = process.env.VITE_API_BASE_URL || 'http://localhost:8080';
 const minioUrl = 'http://localhost:9000';
 
 // Для GH Pages используем /rip_frontend/, для Tauri и dev - /
-const base = process.env.GITHUB_PAGES ? '/rip_frontend/' : '/';
+const base = process.env.GITHUB_PAGES ? '/CaviClient/' : '/';
 
 // HTTPS сертификаты (создаются командой: mkcert create-ca && mkcert create-cert)
 // Отключаем HTTPS для Tauri (TAURI_DEV=true) — Tauri использует http://localhost
