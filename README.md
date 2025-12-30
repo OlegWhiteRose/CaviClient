@@ -1,1 +1,1 @@
-# RIP Frontend (Lab 5)
+# PWA for lab 6
